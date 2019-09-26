@@ -2,16 +2,14 @@ var svg = d3.select('svg');
 var margin = 200;
 var width = svg.attr('width') - margin;
 var height = svg.attr('height') - margin;
+// Mention the Scaling Range of X and Y
 var xScale = d3.scaleBand().range([0, width]).padding(0.4);
 var yScale = d3.scaleLinear().range([height, 0]);
+// Create a General <g> Element in SVG
 var g = svg.append("g").
     attr("transform", "translate(" + 100 + "," + 100 + ")");
+// Use the CSV data to plot bar chart
 d3.csv("data.csv").then(data => {
-    //    if(err){
-    //        console.log(err);
-    //        throw err;
-    //    }
-    //    console.log(data);
     xScale.domain(data.map(
         function (d) {
             //    console.log(d.state);
@@ -70,68 +68,158 @@ class BarValues {
         this.H = H;
     }
 }
-function DrawPieChartbyD3(A){
-   var data=[];
-   for(var i=0;i<A.length;i++){
-       data.push(A[i].H);
-   }
-   console.log(data);
-   var svg = d3.select('svg'),
-   width = svg.attr('width'),
-   height = svg.attr('height'),
-   radius = Math.min(width-300,height-300)/2,
-   g = svg.append('g').attr('transform','translate('+width/4+','+height/5+')');
+function DrawPieChartbyD3(A,X,Y,id) {
+    var data = [];
+    for (var i = 0; i < A.length; i++) {
+        data.push(A[i].H);
+    }
+    var X = X+120;
+    var Y = Y; 
+    console.log(data);
+    var svg = d3.select('svg'),
+        width = svg.attr('width'),
+        height = svg.attr('height'),
+        radius = 20,
+        // radius = Math.min(width - 400, height - 400) / 2,
+        g = svg.append('g').attr('transform', 'translate(' + X + ',' + Y + ')');
+        // g = svg.append('g').attr('transform', 'translate(' + width / 4 + ',' + height / 5 + ')');
 
-   var color = d3.scaleOrdinal(['#4daf4a','#377eb8','#ff7f00']);
-   var pie = d3.pie();
-   var arc = d3.arc().
-                innerRadius(0).
-                outerRadius(radius);
-   var label = d3.arc().
-                  outerRadius(radius).
-                  innerRadius(radius-80);
-   var arcs = g.selectAll('arc').
-                data(pie(data)).
-                enter().
-                append('g').
-                attr('class','arc');
+    console.log('SVG H : ',height,' SVG W : ',width);    
+    var color = d3.scaleOrdinal(['#4daf4a', '#377eb8', '#ff7f00']);
+    var pie = d3.pie();
+    var arc;
+    arc = d3.arc().
+    innerRadius(5).
+    outerRadius(radius);   
+    for(var i=0;i<radius;i=i+2){
+       
+    }
+    // var s=setInterval(
+    //     function(){
+         
+    //     }
+    // ,100);
+    
+    
+    var label = d3.arc().
+        outerRadius(20).
+        innerRadius(15 );
+    var arcs = g.selectAll('arc').
+        data(pie(data)).
+        enter().
+        append('g').
+        attr('class', 'arc').
+        attr('id','p'+id.toString());
 
-   arcs.append('path').
-                attr('fill',function(d,i){
-                return color(i);
-                }).
-                attr('d',arc);
-   arcs.append('text').
-        attr('transform',function(d){
-            return 'translate('+label.centroid(d)+')';
+    arcs.append('path').
+        attr('fill', function (d, i) {
+            return color(i);
         }).
-        text(function(d){
-            return d.data+'%';
+        transition().
+        duration(2000).
+        attr('d', arc);
+    arcs.append('text').
+        attr('transform', function (d) {
+            return 'translate(' + label.centroid(d) + ')';
+        }).
+        attr('font-size','10px').
+        text(function (d) {
+            return d.data + '%';
         })
 
 }
-function DrawPieChart(X,Y,W,H,A){
-   console.log('in draw pie ',A,X,Y,W,H);
-   var i1=0;
-   let nA= A.find((d,i)=>{
-       
-       if(d.x==X && d.y==Y && d.W==W && d.H==H){
-           console.log(d.x,d.y,d.W,d.H);
-           i1=i;
-           return true;
-       }
-   });
-   var New3ValuesArray = [];
-   if(A[i1-1])
-   New3ValuesArray.push(A[i1-1]);
+function DrawPieChart(X, Y, W, H, A,id) {
+    console.log('in draw pie ', A, X, Y, W, H);
+    var i1 = 0;
+    let nA = A.find((d, i) => {
+
+        if (d.x == X && d.y == Y && d.W == W && d.H == H) {
+            console.log(d.x, d.y, d.W, d.H);
+            i1 = i;
+            return true;
+        }
+    });
+    var New3ValuesArray = [];
+    if (A[i1 - 1])
+        New3ValuesArray.push(A[i1 - 1]);
+
+    New3ValuesArray.push(A[i1]);
+
+    if (A[i1 + 1])
+        New3ValuesArray.push(A[i1 + 1]);
+    console.log(New3ValuesArray);
+    console.log(i1,id);
+    DrawPieChartbyD3(New3ValuesArray,X,Y,id);
+}
+var isclickBar=false;
+var pieid=-1;
+function RemoveAllRemainingPieCharts(n){
+    // if(document.getElementById ('p'+k)){
+    //     console.log(k);
+    //     document.getElementById ('p'+k).remove();  
+    // }
+  console.log('Pie id  : ',pieid);  
+  for(var i=0;i<pieid;i++){
+    //   g.select('#p'+i).remove();
+    // console.log(document.getElementById ('p'+i));
+    // if(i!=pieid){
+        console.log('p'+i);
    
-   New3ValuesArray.push(A[i1]);
+        if(document.getElementById ('p'+i)){
+            // console.log('p'+i);
+            // if(d3.select('#p'+i)['_groups'][0][0].outerHTML)
+            // d3.select('#p'+i)['_groups'][0][0].outerHTML="";
+
+            // console.log(d3.select('#p'+i)['_groups'][0][0].outerHTML);
+            d3.select('#p'+i).remove();
+        //     // var ele=document.getElementById ('p'+i);
+        //     // ele.style.transform = 'translate(0,0)';
+        //     // ele.parentNode.removeChild(ele);
+            // document.getElementById ('p'+i).remove();  
+        // }
+     
+    }
+    
+     
+  }
+  for(var i=pieid+1;i<n;i++){
+    if(document.getElementById ('p'+i)){
+        d3.select('#p'+i).remove();
+        // console.log(typeof d3.select('#p'+i)['_groups'][0][0]);
+        // delete d3.select('#p'+i)['_groups'][0][0];
+        // if(d3.select('#p'+i)['_groups'][0][0].outerHTML)
+        // d3.select('#p'+i)['_groups'][0][0].outerHTML="";
+    }      
+  } 
+}
+function ChangeColorToggling(BarClicked,Bars,n,x,y,w,h,A){
+  
+     for(var i=0;i<n;i++){
+         if(Bars.item(i)==BarClicked){
+            //  console.log(BarClicked);
+             Bars.item(i).style.fill='yellow';
+
+            //  Bars.item(i).style.stroke='green';
+            //  Bars.item(i).style.strokeWidth='3';
+            //  Bars.item(i).style.filter='url(#f2)';
+            // Bars.item(i).style.boxShadow = '10px 10px 5px  rgba(0, 0, 0, .5)';
+            DrawPieChart(x,y,w,h,A,i);
+            pieid=i;
+            
+            // console.log(Bars .item(i).style);
+            //  console.log(Bars.item(i));
+         }
+         else{
+            // Bars.item(i).style.fill='chocolate';
+            // Bars.item(i).style.boxShadow = "10px 10px 5px gray";
+            // Bars.item(i).style.filter = 'url(#Bold)';
+            Bars.item(i).style.filter = 'drop-shadow(-1px 3px 3px rgba(50, 50, 50, 0.6))';
+            console.log(Bars.item(i).style);
+            RemoveAllRemainingPieCharts(n);
+
+         }
+     }
    
-   if(A[i1+1])
-   New3ValuesArray.push(A[i1+1]);
-   console.log(New3ValuesArray);
-   console.log(i1);
-   DrawPieChartbyD3(New3ValuesArray);
 }
 function init() {
     var svg = document.getElementsByTagName('svg');
@@ -139,39 +227,27 @@ function init() {
     var g = document.getElementsByTagName('g');
     console.log(g);
     var lengthofBars = document.getElementsByTagName("rect").length;
-    // console.log(typeof bars);
-    // console.log(bars.item(0));
-    // console.log(bars.namedItem('rect'));
+   
     console.log(lengthofBars);
     var bars = document.getElementsByTagName("rect");
     console.log(bars);
     var ArrayofValues = [];
     for (var i = 0; i < lengthofBars; i++) {
-  
-        // console.log(bars.item(i).width.animVal.value);
-        // console.log(bars.item(i).height.animVal.value);
-        // console.log(bars.item(i).y.animVal.value);
-        // console.log(bars.item(i).x.animVal.value);
-        ArrayofValues.push(new BarValues(bars.item(i).x.animVal.value,bars.item(i).y.animVal.value,bars.item(i).width.animVal.value,bars.item(i).height.animVal.value)); 
-    } 
-    console.log(ArrayofValues);
 
-    for (var i = 0; i < lengthofBars; i++) {
-        // console.log(bars.item(i));
         // console.log(bars.item(i).width.animVal.value);
         // console.log(bars.item(i).height.animVal.value);
         // console.log(bars.item(i).y.animVal.value);
         // console.log(bars.item(i).x.animVal.value);
-        // console.log(bars.item(i).attributes);
+        ArrayofValues.push(new BarValues(bars.item(i).x.animVal.value, bars.item(i).y.animVal.value, bars.item(i).width.animVal.value, bars.item(i).height.animVal.value));
+    }
+    console.log(ArrayofValues);
+  
+    for (var i = 0; i < lengthofBars; i++) {
+      
         bars.item(i).addEventListener('click', function (d) {
-            // console.log(d);
-            // console.log('clicked to bar',d.x,d.y);
-            // console.log(this.x,this.y);
-            console.log(this.x.animVal.value);
-            console.log(this.y.animVal.value);
-            console.log(this.height.animVal.value);
-            console.log(this.width.animVal.value);
-            DrawPieChart(this.x.animVal.value,this.y.animVal.value,this.width.animVal.value,this.height.animVal.value,ArrayofValues);
+          
+            ChangeColorToggling(this,bars,lengthofBars,this.x.animVal.value, this.y.animVal.value, this.width.animVal.value, this.height.animVal.value, ArrayofValues);
+            // RemoveAllRemainingPieCharts(lengthofBars);
         });
     }
 }
