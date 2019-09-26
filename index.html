@@ -8,9 +8,39 @@
     <title>Document</title>
     <!-- <link rel="stylesheet" href="../css/custom.css"> -->
     <style>
-    .bar{
-        fill: chocolate;
-    }
+        .bar {
+            fill: chocolate;
+            /* -webkit-filter: drop-shadow(3px 3px 2px rgba(0, 0, 0,1));
+            filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 1)); */
+            /* box-shadow: 10px 10px 5px gray; */
+        }
+
+       
+        @keyframes strokefill {
+            0% {
+                fill: white;
+                transform: scale(1.0);
+                opacity: 1;
+                /* size: 10px;
+            width: 20%; */
+            }
+
+            100% {
+                fill: black;
+                opacity: 2;
+                transform: scale(2.0);
+                /* transform: translateY(10px); */
+                /* stroke-dashoffset: 0; */
+            }
+        }
+
+        .arc {
+            animation: strokefill 4s ease forwards;
+            /* stroke-dasharray: 324.774;
+        stroke-dashoffset: 324.774; */
+            stroke: red;
+            /* stroke-width: 10; */
+        }
     </style>
 </head>
 
@@ -20,7 +50,7 @@
     <svg class="pie-chart" width="900" height="500"></svg>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <!-- <script src="custom.js"></script> -->
-    <script src="custom2.js"></script> 
+    <script src="custom2.js"></script>
     <!-- <script src="./js/applyd3.js"></script> -->
 </body>
 
